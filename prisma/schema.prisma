@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentProvider {
+  CHAPA
+  TELEBIRR
+  CBE_BIRR
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum ExamStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  fullName      String
+  passwordHash  String?
+  role          Role          @default(STUDENT)
+  departmentId  String?
+  department    Department?   @relation(fields: [departmentId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  subscriptions Subscription[]
+  paymentRecords PaymentRecord[]
+  examAttempts  ExamAttempt[]
+}
+
+model Department {
+  id          String         @id @default(cuid())
+  code        String         @unique
+  name        String
+  shortName   String?
+  description String?
+  active      Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  users       User[]
+  exams       Exam[]
+  subscriptions Subscription[]
+}
+
+model Exam {
+  id             String        @id @default(cuid())
+  departmentId   String
+  department     Department    @relation(fields: [departmentId], references: [id])
+  academicYear   String
+  year           Int
+  title          String
+  description    String?
+  status         ExamStatus    @default(ACTIVE)
+  questions      Question[]
+  examAttempts   ExamAttempt[]
+  createdAt      DateTime      @default(now())
+}
+
+model Question {
+  id             String    @id @default(cuid())
+  examId         String
+  exam           Exam      @relation(fields: [examId], references: [id])
+  prompt         String
+  options        Json
+  correctOptionKey String
+  explanation    String?
+  imageUrl       String?
+  createdAt      DateTime  @default(now())
+}
+
+model Subscription {
+  id            String              @id @default(cuid())
+  userId        String
+  user          User                @relation(fields: [userId], references: [id])
+  departmentId  String
+  department    Department          @relation(fields: [departmentId], references: [id])
+  status        SubscriptionStatus  @default(ACTIVE)
+  expiresAt     DateTime
+  txRef         String?
+  paymentProvider PaymentProvider?
+  createdAt     DateTime            @default(now())
+}
+
+model PaymentRecord {
+  id             String        @id @default(cuid())
+  userId         String?
+  user           User?         @relation(fields: [userId], references: [id])
+  txRef          String        @unique
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("ETB")
+  provider       PaymentProvider
+  departmentId   String?
+  status         PaymentStatus @default(PENDING)
+  rawPayload     Json?
+  createdAt      DateTime      @default(now())
+}
+
+model ExamAttempt {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  examId        String
+  exam          Exam     @relation(fields: [examId], references: [id])
+  score         Int
+  totalQuestions Int
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+}

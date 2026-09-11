@@ -1,0 +1,34 @@
+{
+  "departmentCode": "STAT",
+  "academicYear": "2025/2026",
+  "questions": [
+    {
+      "question": "Which measure describes the central tendency of a dataset most resistant to extreme values?",
+      "options": {
+        "A": "Mean",
+        "B": "Median",
+        "C": "Range",
+        "D": "Variance"
+      },
+      "correctOptionKey": "B",
+      "explanation": "The median is resistant to extreme values and is often preferred for skewed distributions.",
+      "year": 2025,
+      "academicYear": "2025/2026",
+      "departmentCode": "STAT"
+    },
+    {
+      "question": "In probability, the sum of all outcomes in a sample space is always:",
+      "options": {
+        "A": "0",
+        "B": "1",
+        "C": "Undefined",
+        "D": "Infinity"
+      },
+      "correctOptionKey": "B",
+      "explanation": "The total probability of all mutually exclusive outcomes in a sample space equals 1.",
+      "year": 2025,
+      "academicYear": "2025/2026",
+      "departmentCode": "STAT"
+    }
+  ]
+}
